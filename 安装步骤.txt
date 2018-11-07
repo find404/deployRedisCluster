@@ -1,0 +1,56 @@
+﻿#开放需要的端口
+
+firewall-cmd --zone=public --add-port=7000/tcp --permanent
+firewall-cmd --zone=public --add-port=7001/tcp --permanent
+firewall-cmd --zone=public --add-port=7002/tcp --permanent
+firewall-cmd --zone=public --add-port=7003/tcp --permanent
+firewall-cmd --zone=public --add-port=7004/tcp --permanent
+firewall-cmd --zone=public --add-port=7005/tcp --permanent
+
+
+#重启防火墙
+firewall-cmd --reload
+
+
+#安装GCC支持
+yum install gcc tcl
+#ruby
+yum install centos-release-scl-rh
+yum install rh-ruby23  -y
+scl  enable  rh-ruby23 bash
+
+
+#安装redis
+cd /opt/data/
+tar -zxvf redis-4.0.6.tar.gz
+
+cd /opt/data/redis-4.0.6/
+make MALLOC=libc
+cd src && make install
+cd ..
+mv redis-4.0.6 /usr/local/redis
+
+
+
+#把redis-cluster文件夹放置		/usr/local/redis-cluster
+
+
+
+#查看启动状态
+ps -ef|grep redis
+
+
+#开机自启动
+vim /etc/rc.d/rc.local
+
+
+/usr/local/redis/src/redis-server /usr/local/redis-cluster/7000/redis.conf
+/usr/local/redis/src/redis-server /usr/local/redis-cluster/7001/redis.conf
+/usr/local/redis/src/redis-server /usr/local/redis-cluster/7002/redis.conf
+/usr/local/redis/src/redis-server /usr/local/redis-cluster/7003/redis.conf
+/usr/local/redis/src/redis-server /usr/local/redis-cluster/7004/redis.conf
+/usr/local/redis/src/redis-server /usr/local/redis-cluster/7005/redis.conf
+
+/usr/local/redis/src/redis-trib.rb create --replicas 1 192.168.14.207:7000 192.168.14.207:7001 192.168.14.207:7002 192.168.14.207:7003 192.168.14.207:7004 192.168.14.207:7005
+
+yes
